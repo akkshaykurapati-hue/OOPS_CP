@@ -1,0 +1,123 @@
+[
+  {
+    "album": "Synth Horizons",
+    "artist": "Neon Runner",
+    "artworkUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300",
+    "audioFilename": "sample_101.wav",
+    "duration": 224,
+    "genre": "Retrowave",
+    "hasAudio": true,
+    "id": 101,
+    "title": "Midnight Drive (2026 Remaster)"
+  },
+  {
+    "album": "Synthesizer Vol. 1",
+    "artist": "Luna Vox",
+    "artworkUrl": "",
+    "audioFilename": "sample_102.wav",
+    "duration": 198,
+    "genre": "Indie Pop",
+    "hasAudio": true,
+    "id": 102,
+    "title": "Fading Echoes"
+  },
+  {
+    "album": "Synthesizer Vol. 1",
+    "artist": "Steel Horizon",
+    "artworkUrl": "",
+    "audioFilename": "sample_103.wav",
+    "duration": 263,
+    "genre": "Rock",
+    "hasAudio": true,
+    "id": 103,
+    "title": "Thunder Road"
+  },
+  {
+    "album": "Synthesizer Vol. 1",
+    "artist": "Neon Pulse",
+    "artworkUrl": "",
+    "audioFilename": "sample_104.wav",
+    "duration": 210,
+    "genre": "Synthwave",
+    "hasAudio": true,
+    "id": 104,
+    "title": "City Lights"
+  },
+  {
+    "album": "Synthesizer Vol. 1",
+    "artist": "Aria Sky",
+    "artworkUrl": "",
+    "audioFilename": "sample_105.wav",
+    "duration": 185,
+    "genre": "Pop",
+    "hasAudio": true,
+    "id": 105,
+    "title": "Starfall"
+  },
+  {
+    "album": "Synthesizer Vol. 1",
+    "artist": "The Iron Blooms",
+    "artworkUrl": "",
+    "audioFilename": "sample_106.wav",
+    "duration": 241,
+    "genre": "Alternative",
+    "hasAudio": true,
+    "id": 106,
+    "title": "Rust and Roses"
+  },
+  {
+    "album": "Synthesizer Vol. 1",
+    "artist": "CyberDrift",
+    "artworkUrl": "",
+    "audioFilename": "sample_107.wav",
+    "duration": 195,
+    "genre": "Electronic",
+    "hasAudio": true,
+    "id": 107,
+    "title": "Digital Rain"
+  },
+  {
+    "album": "Synthesizer Vol. 1",
+    "artist": "Wanderer",
+    "artworkUrl": "",
+    "audioFilename": "sample_108.wav",
+    "duration": 217,
+    "genre": "Folk",
+    "hasAudio": true,
+    "id": 108,
+    "title": "Broken Compass"
+  },
+  {
+    "album": "Synthesizer Vol. 1",
+    "artist": "Glitch Theory",
+    "artworkUrl": "",
+    "audioFilename": "sample_109.wav",
+    "duration": 232,
+    "genre": "Synthwave",
+    "hasAudio": true,
+    "id": 109,
+    "title": "Neon Shadows"
+  },
+  {
+    "album": "Synthesizer Vol. 1",
+    "artist": "Tidal Waves",
+    "artworkUrl": "",
+    "audioFilename": "sample_110.wav",
+    "duration": 278,
+    "genre": "Ambient",
+    "hasAudio": true,
+    "id": 110,
+    "title": "Ocean Lullaby"
+  },
+  {
+    "album": "Single",
+    "artist": "lana del ray",
+    "artworkUrl": "",
+    "audioFilename": "track_202_1791962098655582700.mp3",
+    "duration": 265,
+    "genre": "Electronic",
+    "hasAudio": true,
+    "id": 202,
+    "title": "Summertime Sadness"
+  }
+]

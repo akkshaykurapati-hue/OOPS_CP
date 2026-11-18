@@ -1,0 +1,71 @@
+[
+  {
+    "id": 0,
+    "name": "Chill & Focus",
+    "trackIds": [
+      101,
+      102,
+      104,
+      110
+    ]
+  },
+  {
+    "id": 1,
+    "name": "Synthwave Nights",
+    "trackIds": [
+      101,
+      104,
+      107,
+      109
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Chill & Focus (1)",
+    "trackIds": [
+      101,
+      102,
+      104,
+      110
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Chill & Focus (2)",
+    "trackIds": [
+      101,
+      102,
+      104,
+      110
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Renamed Integration Playlist (1)",
+    "trackIds": [
+      102,
+      101
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Renamed Playlist 1791908592 (1)",
+    "trackIds": [
+      102,
+      101
+    ]
+  },
+  {
+    "id": 6,
+    "name": "summertime sadness",
+    "trackIds": []
+  },
+  {
+    "id": 7,
+    "name": "Renamed Playlist 1792602886 (1)",
+    "trackIds": [
+      102,
+      101
+    ]
+  }
+]

@@ -1,0 +1,19 @@
+# Build artifacts
+*.exe
+*.o
+*.obj
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Data files (saved playlists — user-generated)
+data/*.csv
+!data/sample_tracks.csv

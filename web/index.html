@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Playlist Synthesizer — C++17 Music Dashboard</title>
+  <meta name="description" content="C++17 OOP Smart Playlist Synthesizer — Real audio streaming, HashSet duplicate prevention, dynamic vector shuffling, and a premium dark music dashboard.">
+  <meta name="theme-color" content="#060810">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+  <div class="app-container">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18V5l12-2v13"></path>
+            <circle cx="6" cy="18" r="3"></circle>
+            <circle cx="18" cy="16" r="3"></circle>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Smart Playlist</span>
+          <span class="brand-subtitle">Synthesizer C++17</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" id="navHomeBtn" data-view="home">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          </svg>
+          <span>Home</span>
+        </button>
+
+        <button class="nav-item" id="navLibraryBtn" data-view="library">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m16 6 4 14"></path>
+            <path d="M12 6v14"></path>
+            <path d="M8 8v12"></path>
+            <path d="M4 4v16"></path>
+          </svg>
+          <span>Your Library</span>
+        </button>
+
+        <button class="nav-item" id="navPlaylistsBtn" data-view="playlists">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <span>Playlists</span>
+        </button>
+
+        <button class="nav-item" id="navSearchBtn" data-view="search">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <span>Search</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-actions">
+        <div class="sidebar-heading">PLAYLIST ACTIONS</div>
+        <button class="btn btn-secondary btn-sidebar" id="btnOpenCreatePlaylistModal">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          <span>Create Playlist</span>
+        </button>
+        <button class="btn btn-secondary btn-sidebar" id="btnOpenLoadPlaylistModal">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Load from CSV</span>
+        </button>
+      </div>
+
+      <div class="sidebar-playlists-container">
+        <div class="sidebar-heading">YOUR PLAYLISTS</div>
+        <div class="sidebar-playlists-list" id="sidebarPlaylistsList" role="list" aria-label="Your Playlists">
+          <!-- Populated dynamically via JS -->
+          <div class="playlist-nav-skeleton">Loading playlists...</div>
+        </div>
+      </div>
+
+      <!-- Backend Connection Status badge -->
+      <div class="backend-badge" id="backendBadge">
+        <span class="status-dot online"></span>
+        <span class="status-label">C++17 Backend: Online</span>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" id="mainContent">
+      
+      <!-- Top Bar Header -->
+      <header class="topbar">
+        <div class="topbar-search">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="text" id="globalSearchInput" placeholder="Search songs by title, artist, or genre..." autocomplete="off">
+          <button class="search-clear-btn" id="searchClearBtn" style="display:none;" title="Clear search">✕</button>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-primary" id="btnOpenUploadModal" title="Upload audio files (.mp3, .wav, .ogg, .flac)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Upload Music</span>
+          </button>
+          <button class="btn btn-secondary" id="btnOpenAddSongModal" title="Add track metadata manually">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Track</span>
+          </button>
+          <button class="btn btn-secondary btn-icon" id="btnShortcutsInfo" title="Keyboard Shortcuts (Space, Arrows, M, N, P, S, R)">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+              <line x1="6" y1="8" x2="6.01" y2="8"></line>
+              <line x1="10" y1="8" x2="10.01" y2="8"></line>
+              <line x1="14" y1="8" x2="14.01" y2="8"></line>
+              <line x1="18" y1="8" x2="18.01" y2="8"></line>
+              <line x1="6" y1="12" x2="6.01" y2="12"></line>
+              <line x1="18" y1="12" x2="18.01" y2="12"></line>
+              <line x1="7" y1="16" x2="17" y2="16"></line>
+            </svg>
+          </button>
+          <button class="btn btn-accent" id="btnRefreshAll" title="Refresh data from C++ server">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+            </svg>
+            <span>Sync</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <div class="views-wrapper">
+
+        <!-- Global Loading State -->
+        <div class="main-loading-state" id="mainLoadingState" style="display:none;">
+          <div class="main-spinner"></div>
+          <p class="loading-text" id="mainLoadingText">Connecting to C++17 Synthesizer Engine...</p>
+        </div>
+
+        <!-- Global Error Banner -->
+        <div class="main-error-banner" id="mainErrorBanner" style="display:none;">
+          <div class="error-banner-content">
+            <span class="error-icon">⚠️</span>
+            <div class="error-texts">
+              <strong class="error-title" id="mainErrorTitle">Backend Connection Error</strong>
+              <p class="error-desc" id="mainErrorDesc">Could not reach the C++17 server.</p>
+            </div>
+          </div>
+          <button class="btn btn-secondary btn-sm" id="btnRetryConnection">Retry</button>
+        </div>
+
+        <!-- 1. HOME VIEW -->
+        <section class="view-panel active" id="viewHome">
+          <!-- Hero Banner -->
+          <div class="hero-card">
+            <div class="hero-content">
+              <div class="hero-badge">🎓 OOP COURSE PROJECT — SY B.TECH</div>
+              <h1 class="hero-title">Smart Playlist Synthesizer</h1>
+              <p class="hero-subtitle">
+                High-performance C++17 engine featuring HashSet duplicate prevention, vector track shuffling, and unified simulated playback.
+              </p>
+              <div class="hero-buttons">
+                <button class="btn btn-primary" id="heroPlayActiveBtn">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                  </svg>
+                  <span>Play Active Playlist</span>
+                </button>
+                <button class="btn btn-secondary" id="heroExploreLibraryBtn">
+                  <span>Browse Master Library</span>
+                </button>
+              </div>
+            </div>
+            <div class="hero-visual">
+              <div class="sound-wave">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Metrics Bar -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">🎵</div>
+              <div class="stat-info">
+                <span class="stat-value" id="statSongsCount">--</span>
+                <span class="stat-label">Master Tracks</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">📑</div>
+              <div class="stat-info">
+                <span class="stat-value" id="statPlaylistsCount">--</span>
+                <span class="stat-label">Playlists</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">⏱️</div>
+              <div class="stat-info">
+                <span class="stat-value" id="statTotalDuration">--:--</span>
+                <span class="stat-label">Library Duration</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🛡️</div>
+              <div class="stat-info">
+                <span class="stat-value" id="statDuplicateStatus">Protected</span>
+                <span class="stat-label">HashSet Duplicate Guard</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Playlists Shelf -->
+          <div class="section-block">
+            <div class="section-header">
+              <h2 class="section-title">Your Playlists</h2>
+              <button class="link-btn" id="linkViewAllPlaylists">See All &rarr;</button>
+            </div>
+            <div class="playlists-shelf" id="homePlaylistsShelf">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Featured Tracks Shelf -->
+          <div class="section-block">
+            <div class="section-header">
+              <h2 class="section-title">Featured Library Tracks</h2>
+              <button class="link-btn" id="linkViewAllTracks">View Entire Library &rarr;</button>
+            </div>
+            <div class="featured-tracks-grid" id="homeFeaturedTracksGrid">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. LIBRARY VIEW -->
+        <section class="view-panel" id="viewLibrary">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Master Music Library</h2>
+              <p class="panel-desc">Complete catalog of tracks managed by C++ <code>MusicLibrary</code>.</p>
+            </div>
+            <div class="panel-controls">
+              <button class="btn btn-primary" id="btnLibraryUpload" title="Upload music files to master library">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Upload Music</span>
+              </button>
+              <div class="filter-group">
+                <label for="librarySortSelect">Sort by:</label>
+                <select id="librarySortSelect" class="form-select">
+                  <option value="id">Default (ID)</option>
+                  <option value="title">Title (A-Z)</option>
+                  <option value="artist">Artist (A-Z)</option>
+                  <option value="duration">Duration (Shortest first)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Genre Filter Pills -->
+          <div class="genre-pills" id="genrePillsContainer">
+            <button class="pill active" data-genre="all">All Genres</button>
+            <!-- Generated dynamically -->
+          </div>
+
+          <!-- Songs Table Container -->
+          <div class="table-responsive">
+            <table class="song-table" id="masterSongTable">
+              <thead>
+                <tr>
+                  <th style="width: 60px;">#</th>
+                  <th>Title & Artist</th>
+                  <th>Album</th>
+                  <th>Genre</th>
+                  <th style="text-align: right; width: 90px;">Duration</th>
+                  <th style="text-align: right; width: 200px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="masterSongTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="libraryEmptyState" style="display:none;">
+            <div class="empty-icon">🎧</div>
+            <h3>Your Music Library is Empty</h3>
+            <p>Upload your local audio files (MP3, WAV, OGG, or FLAC) to build your personal streaming library.</p>
+            <button class="btn btn-primary" id="btnEmptyUploadMusic">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>Upload Audio Files</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- 3. PLAYLISTS VIEW -->
+        <section class="view-panel" id="viewPlaylists">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title">Playlist Collection</h2>
+              <p class="panel-desc">Manage, synthesize, shuffle, and persist your custom collections.</p>
+            </div>
+            <div class="panel-controls">
+              <button class="btn btn-primary" id="btnCreatePlaylistHeader">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>New Playlist</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Playlist Cards Grid -->
+          <div class="playlists-grid" id="allPlaylistsGrid">
+            <!-- Rendered dynamically -->
+          </div>
+
+          <!-- Active Playlist Detail Section -->
+          <div class="playlist-detail-container" id="playlistDetailContainer" style="display:none;">
+            <div class="playlist-detail-header">
+              <div class="playlist-artwork" id="detailArtwork">🎵</div>
+              <div class="playlist-meta">
+                <div class="meta-tag">PLAYLIST</div>
+                <h2 class="detail-title" id="detailTitle">Playlist Name</h2>
+                <div class="detail-stats" id="detailStats">0 songs • 00:00 total duration</div>
+                <div class="detail-actions">
+                  <button class="btn btn-primary" id="btnDetailPlay">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Play</span>
+                  </button>
+                  <button class="btn btn-accent" id="btnDetailShuffle" title="Shuffle underlying track order using C++ std::shuffle & mt19937">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="16 3 21 3 21 8"></polyline>
+                      <line x1="4" y1="20" x2="21" y2="3"></line>
+                      <polyline points="21 16 21 21 16 21"></polyline>
+                      <line x1="15" y1="15" x2="21" y2="21"></line>
+                      <line x1="4" y1="4" x2="9" y2="9"></line>
+                    </svg>
+                    <span>Shuffle (Requirement)</span>
+                  </button>
+                  <button class="btn btn-secondary" id="btnDetailSort" title="Sort tracks inside playlist">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="4" y1="6" x2="20" y2="6"></line>
+                      <line x1="4" y1="12" x2="14" y2="12"></line>
+                      <line x1="4" y1="18" x2="8" y2="18"></line>
+                    </svg>
+                    <span>Sort</span>
+                  </button>
+                  <button class="btn btn-secondary" id="btnDetailSave" title="Save this playlist to a CSV file">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                      <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                      <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    <span>Save to CSV</span>
+                  </button>
+                  <button class="btn btn-secondary" id="btnDetailRename" title="Rename playlist">
+                    <span>Rename</span>
+                  </button>
+                  <button class="btn btn-danger-outline" id="btnDetailDelete" title="Delete playlist">
+                    <span>Delete</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Playlist Tracks Table -->
+            <div class="table-responsive">
+              <table class="song-table" id="playlistTracksTable">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>Title & Artist</th>
+                    <th>Genre</th>
+                    <th style="text-align: right; width: 80px;">Time</th>
+                    <th style="text-align: right; width: 120px;">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="playlistTracksTableBody">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="empty-state" id="playlistTracksEmptyState" style="display:none;">
+              <p>This playlist has no songs yet.</p>
+              <button class="btn btn-secondary" id="btnEmptyAddFromLibrary">Browse Library & Add Tracks</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. SEARCH RESULTS VIEW -->
+        <section class="view-panel" id="viewSearch">
+          <div class="panel-header">
+            <div>
+              <h2 class="panel-title" id="searchResultsHeading">Search Results</h2>
+              <p class="panel-desc" id="searchResultsSubtitle">Showing matches from live backend query.</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="song-table" id="searchTable">
+              <thead>
+                <tr>
+                  <th style="width: 50px;"># ID</th>
+                  <th>Title & Artist</th>
+                  <th>Genre</th>
+                  <th style="text-align: right; width: 80px;">Time</th>
+                  <th style="text-align: right; width: 160px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="searchTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div class="empty-state" id="searchEmptyState" style="display:none;">
+            <p>No songs found matching your search term.</p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Real HTML5 Audio Player Engine (Source of truth) -->
+    <audio id="realAudio" preload="metadata"></audio>
+
+    <!-- Bottom Streaming Player Bar -->
+    <footer class="player-bar" id="playerBar">
+      <!-- Left Track Info -->
+      <div class="player-track-info">
+        <div class="track-artwork-badge" id="playerArtwork">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+          <div class="player-bars-wave" id="playerWaveAnim" style="display:none;">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <div class="player-buffer-spinner" id="playerBufferSpinner" style="display:none;" title="Buffering audio..."></div>
+        </div>
+        <div class="track-text">
+          <span class="track-title" id="playerTrackTitle">No Track Selected</span>
+          <div class="track-sub-details">
+            <span class="track-artist" id="playerTrackArtist">Choose a song to play</span>
+            <span class="track-album-separator" id="trackAlbumSep" style="display:none;">&bull;</span>
+            <span class="track-album" id="playerTrackAlbum" style="display:none;">Single</span>
+          </div>
+        </div>
+        <span class="badge-format" id="playerFormatBadge">REAL AUDIO</span>
+      </div>
+
+      <!-- Center Player Controls & Seekable Progress -->
+      <div class="player-controls-container">
+        <div class="player-buttons">
+          <button class="player-btn" id="playerShuffleBtn" title="Toggle Shuffle (S)">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 3 21 3 21 8"></polyline>
+              <line x1="4" y1="20" x2="21" y2="3"></line>
+              <polyline points="21 16 21 21 16 21"></polyline>
+              <line x1="15" y1="15" x2="21" y2="21"></line>
+              <line x1="4" y1="4" x2="9" y2="9"></line>
+            </svg>
+          </button>
+          
+          <button class="player-btn" id="playerPrevBtn" title="Previous Track (P)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <polygon points="19 20 9 12 19 4 19 20"></polygon>
+              <line x1="5" y1="4" x2="5" y2="20" stroke="currentColor" stroke-width="2"></line>
+            </svg>
+          </button>
+
+          <button class="player-btn-play" id="playerPlayPauseBtn" title="Play / Pause (Space)">
+            <svg id="iconPlay" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <polygon points="6 4 20 12 6 20 6 4"></polygon>
+            </svg>
+            <svg id="iconPause" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" style="display:none;">
+              <rect x="6" y="4" width="4" height="16"></rect>
+              <rect x="14" y="4" width="4" height="16"></rect>
+            </svg>
+          </button>
+
+          <button class="player-btn" id="playerNextBtn" title="Next Track (N)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <polygon points="5 4 15 12 5 20 5 4"></polygon>
+              <line x1="19" y1="4" x2="19" y2="20" stroke="currentColor" stroke-width="2"></line>
+            </svg>
+          </button>
+
+          <button class="player-btn" id="playerRepeatBtn" title="Repeat: Off (R)">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="17 1 21 5 17 9"></polyline>
+              <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+              <polyline points="7 23 3 19 7 15"></polyline>
+              <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+            </svg>
+            <span class="repeat-mode-badge" id="repeatModeBadge" style="display:none;">1</span>
+          </button>
+        </div>
+
+        <div class="player-progress-bar">
+          <span class="time-label" id="playerElapsed">0:00</span>
+          <div class="progress-track" id="progressTrack">
+            <div class="progress-buffer" id="bufferFill" style="width: 0%;"></div>
+            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            <input type="range" class="progress-slider" id="progressSlider" min="0" max="100" value="0" step="0.1" aria-label="Seek position">
+          </div>
+          <span class="time-label" id="playerDuration">0:00</span>
+        </div>
+      </div>
+
+      <!-- Right Volume & Context -->
+      <div class="player-right-info">
+        <div class="volume-control-group">
+          <button class="player-btn btn-volume" id="playerMuteBtn" title="Mute / Unmute (M)">
+            <svg id="iconVolHigh" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            </svg>
+            <svg id="iconVolMuted" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+              <line x1="23" y1="9" x2="17" y2="15"></line>
+              <line x1="17" y1="9" x2="23" y2="15"></line>
+            </svg>
+          </button>
+          <input type="range" class="volume-slider" id="playerVolumeSlider" min="0" max="1" step="0.01" value="0.8" aria-label="Volume level">
+          <span class="volume-label" id="playerVolumeValue">80%</span>
+        </div>
+
+        <div class="active-pl-badge">
+          <span class="subtle-txt">Queue:</span>
+          <span class="pl-name-tag" id="playerActivePlName">Library</span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ── MODALS ────────────────────────────────────────────────────────── -->
+
+  <!-- 1. Create Playlist Modal -->
+  <div class="modal-overlay" id="modalCreatePlaylist" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Create New Playlist</h3>
+        <button class="modal-close-btn" data-close="modalCreatePlaylist">&times;</button>
+      </div>
+      <form id="formCreatePlaylist">
+        <div class="form-group">
+          <label for="inputPlaylistName">Playlist Name</label>
+          <input type="text" id="inputPlaylistName" class="form-input" placeholder="e.g. Late Night Coding, Lo-Fi Chill" required maxlength="50">
+          <div class="form-hint">Unique name enforced by C++ <code>PlaylistManager</code>.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalCreatePlaylist">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Add Track to Master Library Modal -->
+  <div class="modal-overlay" id="modalAddSong" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Add New Track to Library</h3>
+        <button class="modal-close-btn" data-close="modalAddSong">&times;</button>
+      </div>
+      <form id="formAddSong">
+        <div class="form-group">
+          <label for="inputSongId">Song ID (Integer > 0)</label>
+          <input type="number" id="inputSongId" class="form-input" placeholder="e.g. 111" required min="1">
+        </div>
+        <div class="form-group">
+          <label for="inputSongTitle">Title</label>
+          <input type="text" id="inputSongTitle" class="form-input" placeholder="e.g. Quantum Dreams" required>
+        </div>
+        <div class="form-group">
+          <label for="inputSongArtist">Artist</label>
+          <input type="text" id="inputSongArtist" class="form-input" placeholder="e.g. Solar Wave" required>
+        </div>
+        <div class="form-group">
+          <label for="inputSongGenre">Genre</label>
+          <input type="text" id="inputSongGenre" class="form-input" placeholder="e.g. Synthwave, Rock, Ambient" required>
+        </div>
+        <div class="form-group">
+          <label for="inputSongDuration">Duration (Seconds)</label>
+          <input type="number" id="inputSongDuration" class="form-input" placeholder="e.g. 215" required min="1" max="3600">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalAddSong">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add to Library</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. Add Song to Playlist Picker Modal -->
+  <div class="modal-overlay" id="modalAddToPlaylist" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Add Track to Playlist</h3>
+        <button class="modal-close-btn" data-close="modalAddToPlaylist">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="target-song-preview" id="pickerSongPreview">Track info...</p>
+        <div class="form-group">
+          <label for="selectTargetPlaylist">Choose Target Playlist</label>
+          <select id="selectTargetPlaylist" class="form-select">
+            <!-- Populated via JS -->
+          </select>
+          <div class="form-hint">
+            <strong>Duplicate Prevention:</strong> If this song already exists in the chosen playlist, the backend's <code>std::unordered_set</code> will reject it with a clear notification.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-close="modalAddToPlaylist">Cancel</button>
+        <button type="button" class="btn btn-primary" id="btnConfirmAddToPlaylist">Add Track</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Load Playlist from File Modal -->
+  <div class="modal-overlay" id="modalLoadPlaylist" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Load Playlist from File</h3>
+        <button class="modal-close-btn" data-close="modalLoadPlaylist">&times;</button>
+      </div>
+      <form id="formLoadPlaylist">
+        <div class="form-group">
+          <label for="inputLoadFilename">File Path or Name</label>
+          <input type="text" id="inputLoadFilename" class="form-input" placeholder="e.g. sample_tracks.csv or my_mix.csv" required>
+          <div class="form-hint">Looks in <code>data/</code> by default. Parses lines according to C++ <code>PlaylistStorage</code> CSV format.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalLoadPlaylist">Cancel</button>
+          <button type="submit" class="btn btn-primary">Load Playlist</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Real Audio Upload Modal (Drag-and-Drop & File Picker) -->
+  <div class="modal-overlay" id="modalUploadMusic" style="display:none;">
+    <div class="modal-card modal-upload-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3>Upload Music to Master Library</h3>
+          <span class="modal-subtitle">Add MP3, WAV, OGG, or FLAC audio for real browser playback</span>
+        </div>
+        <button class="modal-close-btn" data-close="modalUploadMusic">&times;</button>
+      </div>
+      <form id="formUploadMusic">
+        <!-- Drag & Drop Zone -->
+        <div class="upload-dropzone" id="uploadDropZone">
+          <input type="file" id="uploadAudioInput" accept=".mp3,.wav,.ogg,.flac,audio/*" style="display:none;">
+          <div class="dropzone-icon">
+            <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div class="dropzone-text">
+            <p class="dropzone-primary">Drag & drop your audio file here, or <span class="dropzone-browse">browse</span></p>
+            <p class="dropzone-hint">Supports MP3, WAV, OGG, FLAC (up to 50 MB) &bull; Byte-range seekable</p>
+          </div>
+        </div>
+
+        <!-- Selected File Status Badge -->
+        <div class="selected-file-card" id="uploadFileMeta" style="display:none;">
+          <div class="file-card-info">
+            <span class="file-format-badge" id="uploadDetectedFormat">MP3</span>
+            <div class="file-text">
+              <span class="file-name" id="uploadSelectedFilename">song.mp3</span>
+              <span class="file-meta" id="uploadSelectedFilesize">3.4 MB &bull; 3:45</span>
+            </div>
+          </div>
+          <button type="button" class="btn-clear-file" id="btnClearUploadedFile" title="Choose another file">&times;</button>
+        </div>
+
+        <!-- Metadata Editing Fields -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="uploadTitle">Title <span class="required">*</span></label>
+            <input type="text" id="uploadTitle" class="form-input" placeholder="e.g. Midnight Drive" required>
+          </div>
+          <div class="form-group flex-1">
+            <label for="uploadArtist">Artist <span class="required">*</span></label>
+            <input type="text" id="uploadArtist" class="form-input" placeholder="e.g. Echo Nova" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="uploadAlbum">Album</label>
+            <input type="text" id="uploadAlbum" class="form-input" placeholder="e.g. Synthesizer Anthology">
+          </div>
+          <div class="form-group flex-1">
+            <label for="uploadGenre">Genre <span class="required">*</span></label>
+            <input type="text" id="uploadGenre" class="form-input" placeholder="e.g. Electronic, Synthwave, Rock" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="uploadDuration">Duration (Seconds)</label>
+            <input type="number" id="uploadDuration" class="form-input" placeholder="Auto-detected" min="1" max="10800">
+            <div class="form-hint">Auto-detected from media file; editable if needed.</div>
+          </div>
+          <div class="form-group flex-1">
+            <label for="uploadArtwork">Artwork Image URL (Optional)</label>
+            <input type="url" id="uploadArtwork" class="form-input" placeholder="https://... cover image">
+          </div>
+        </div>
+
+        <!-- Upload Progress & Status -->
+        <div class="upload-progress-container" id="uploadProgressWrapper" style="display:none;">
+          <div class="upload-progress-info">
+            <span id="uploadStatusText">Uploading to C++17 server...</span>
+            <span id="uploadProgressPercent">0%</span>
+          </div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="uploadProgressBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <div class="alert-box alert-error" id="uploadErrorAlert" style="display:none;"></div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalUploadMusic">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btnSubmitUpload" disabled>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>Upload to Master Library</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. Edit Track Metadata Modal -->
+  <div class="modal-overlay" id="modalEditSong" style="display:none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h3>Edit Track Metadata</h3>
+          <span class="modal-subtitle" id="editSongSubtitle">Editing track #--</span>
+        </div>
+        <button class="modal-close-btn" data-close="modalEditSong">&times;</button>
+      </div>
+      <form id="formEditSong">
+        <input type="hidden" id="editSongId">
+        <div class="form-group">
+          <label for="editSongTitle">Title <span class="required">*</span></label>
+          <input type="text" id="editSongTitle" class="form-input" required>
+        </div>
+        <div class="form-group">
+          <label for="editSongArtist">Artist <span class="required">*</span></label>
+          <input type="text" id="editSongArtist" class="form-input" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="editSongAlbum">Album</label>
+            <input type="text" id="editSongAlbum" class="form-input">
+          </div>
+          <div class="form-group flex-1">
+            <label for="editSongGenre">Genre <span class="required">*</span></label>
+            <input type="text" id="editSongGenre" class="form-input" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label for="editSongDuration">Duration (Seconds) <span class="required">*</span></label>
+            <input type="number" id="editSongDuration" class="form-input" min="1" max="10800" required>
+          </div>
+          <div class="form-group flex-1">
+            <label for="editSongArtwork">Artwork URL</label>
+            <input type="url" id="editSongArtwork" class="form-input" placeholder="https://... cover image">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-close="modalEditSong">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 7. Keyboard Shortcuts Help Modal -->
+  <div class="modal-overlay" id="modalShortcuts" style="display:none;">
+    <div class="modal-card modal-shortcuts-card">
+      <div class="modal-header">
+        <h3>Keyboard Accessibility Controls</h3>
+        <button class="modal-close-btn" data-close="modalShortcuts">&times;</button>
+      </div>
+      <div class="shortcuts-grid">
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Play / Pause</span>
+          <kbd class="kbd-key">Space</kbd>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Seek Backward 5s</span>
+          <kbd class="kbd-key">&larr;</kbd>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Seek Forward 5s</span>
+          <kbd class="kbd-key">&rarr;</kbd>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Volume Up 5%</span>
+          <kbd class="kbd-key">&uarr;</kbd>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Volume Down 5%</span>
+          <kbd class="kbd-key">&darr;</kbd>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Mute / Unmute</span>
+          <kbd class="kbd-key">M</kbd>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Next Track</span>
+          <kbd class="kbd-key">N</kbd>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Previous Track</span>
+          <kbd class="kbd-key">P</kbd>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Toggle Shuffle</span>
+          <kbd class="kbd-key">S</kbd>
+        </div>
+        <div class="shortcut-item">
+          <span class="shortcut-desc">Toggle Repeat (Off / All / One)</span>
+          <kbd class="kbd-key">R</kbd>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-close="modalShortcuts">Got It</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Toast Notifications Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Main JavaScript bundle -->
+  <script src="app.js?v=3.0"></script>
+</body>
+</html>
